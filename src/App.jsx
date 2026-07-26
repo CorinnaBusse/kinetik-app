@@ -26,6 +26,9 @@ const SANS = "'Source Sans 3', 'Segoe UI', system-ui, sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 const R_GAS = 8.314; // J/(mol K)
 const T0 = 298.15; // K, reference temperature for k_ref
+const ZOOM_MIN = 0.15;
+const ZOOM_MAX = 8;
+const ZOOM_STEP = 1.25;
 
 const SUPERSCRIPT = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
 const sup = (n) => String(n).split("").map((c) => SUPERSCRIPT[c] ?? c).join("");
@@ -123,7 +126,9 @@ export default function KinetikSimulator() {
   const [speed, setSpeed] = useState(50);
   const [eulerRatio, setEulerRatio] = useState(0.1);
   const [running, setRunning] = useState(false);
+  const [zoom, setZoom] = useState(1);
   const [, setTick] = useState(0);
+  const chartWrapRef = useRef(null);
 
   const paramsRef = useRef({});
   paramsRef.current = { tempC, A0, kRef, Ea, noisePct, sampleInterval, speed, eulerRatio };
@@ -177,7 +182,7 @@ export default function KinetikSimulator() {
 
       const arr = histRef.current;
       arr.push({ t, c });
-      const minKeep = t - windowWidthRef.current * 1.5;
+      const minKeep = t - (windowWidthRef.current / ZOOM_MIN) * 1.5;
       while (arr.length > 2 && arr[0].t < minKeep) arr.shift();
 
       if (t - lastSampleRef.current >= p.sampleInterval) {
@@ -205,9 +210,26 @@ export default function KinetikSimulator() {
     const t12 = Math.LN2 / k;
     setSpeed(Math.max(1, Math.round((t12 * 8) / 25)));
   };
+  const zoomIn = () => setZoom((z) => Math.min(ZOOM_MAX, z * ZOOM_STEP));
+  const zoomOut = () => setZoom((z) => Math.max(ZOOM_MIN, z / ZOOM_STEP));
+  const zoomReset = () => setZoom(1);
+
+  // Zoom per Mausrad über dem Diagramm. React macht onWheel standardmäßig
+  // passiv, daher hier ein nativer Listener, damit preventDefault greift.
+  useEffect(() => {
+    const el = chartWrapRef.current;
+    if (!el) return;
+    const onWheel = (e) => {
+      e.preventDefault();
+      const factor = e.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP;
+      setZoom((z) => Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, z * factor)));
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
 
   const elapsed = elapsedRef.current;
-  const ww = windowWidthRef.current;
+  const ww = windowWidthRef.current / zoom;
   const xDomain = elapsed <= ww ? [0, ww] : [elapsed - ww, elapsed];
 
   let yMin = 0, yMax = A0;
@@ -324,17 +346,21 @@ export default function KinetikSimulator() {
 
           {/* CENTER SCREEN + READOUTS */}
           <div className="lg:col-span-8 flex flex-col gap-3">
-            <div style={{ position: "relative", background: SCREEN_BG, borderRadius: 10,
-              boxShadow: "0 3px 10px rgba(27,42,61,0.25)", padding: "10px 6px 4px 0", overflow: "hidden" }}>
+            <div ref={chartWrapRef} style={{ position: "relative", background: SCREEN_BG, borderRadius: 10,
+              boxShadow: "0 3px 10px rgba(27,42,61,0.25)", padding: "14px 10px 6px 4px", overflow: "hidden", touchAction: "pan-y" }}>
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: RED }} />
+              <div style={{ position: "absolute", top: 10, right: 14, fontFamily: SANS, fontSize: 10.5, color: AXIS_LINE, opacity: 0.75, zIndex: 3 }}>
+                Scrollen zum Zoomen · × {zoom.toFixed(zoom < 1 ? 2 : 1)}
+              </div>
               <div style={{ width: "100%", height: 380 }}>
                 <ResponsiveContainer>
-                  <ComposedChart margin={{ top: 10, right: 18, bottom: 6, left: -6 }}>
+                  <ComposedChart margin={{ top: 16, right: 20, bottom: 26, left: 16 }}>
                     <CartesianGrid stroke={GRID_LINE} strokeDasharray="2 4" />
                     <XAxis dataKey="t" type="number" domain={xDomain} allowDataOverflow
-                      tickFormatter={(v) => fmtTime(v)} stroke={AXIS_LINE} tick={{ fontFamily: MONO, fontSize: 10, fill: AXIS_LINE }} />
-                    <YAxis type="number" domain={yDomain} allowDataOverflow stroke={AXIS_LINE} tick={{ fontFamily: MONO, fontSize: 10, fill: AXIS_LINE }}
-                      label={{ value: "c / (mol·L⁻¹)", angle: -90, position: "insideLeft", fill: AXIS_LINE, fontSize: 10, fontFamily: MONO }} />
+                      tickFormatter={(v) => fmtTime(v)} stroke={AXIS_LINE} tick={{ fontFamily: MONO, fontSize: 10.5, fill: AXIS_LINE }}
+                      label={{ value: "Zeit t", position: "insideBottom", offset: -6, fill: AXIS_LINE, fontSize: 12, fontFamily: SANS, fontWeight: 600 }} />
+                    <YAxis type="number" domain={yDomain} allowDataOverflow stroke={AXIS_LINE} tick={{ fontFamily: MONO, fontSize: 10.5, fill: AXIS_LINE }}
+                      label={{ value: "Konzentration c / (mol·L⁻¹)", angle: -90, position: "insideLeft", offset: 8, fill: AXIS_LINE, fontSize: 12, fontFamily: SANS, fontWeight: 600 }} />
                     <Tooltip content={<CustomTooltip />} />
                     <Line data={histRef.current} dataKey="c" stroke={TRACE} strokeWidth={2} dot={false} isAnimationActive={false} name="Modell" />
                     <Scatter data={noisyRef.current} dataKey="value" fill={MEASURE} fillOpacity={0.9} isAnimationActive={false} shape="circle" r={2.6} name="Messung" />
@@ -353,6 +379,11 @@ export default function KinetikSimulator() {
               <button onClick={handleReset} className="rocker" style={{ fontFamily: SANS, fontWeight: 600, fontSize: 12.5, letterSpacing: "0.01em", background: PAPER, border: `1px solid ${PANEL_BORDER}`, borderRadius: 5, padding: "9px 16px", color: NAVY }}>
                 ↺ Neuer Messlauf
               </button>
+              <div className="flex items-center" style={{ border: `1px solid ${PANEL_BORDER}`, borderRadius: 5, overflow: "hidden" }}>
+                <button onClick={zoomOut} className="rocker" title="Herauszoomen" style={{ fontFamily: SANS, fontWeight: 700, fontSize: 14, background: PAPER, border: "none", borderRight: `1px solid ${PANEL_BORDER}`, padding: "8px 12px", color: NAVY }}>−</button>
+                <button onClick={zoomReset} className="rocker" title="Zoom zurücksetzen" style={{ fontFamily: SANS, fontWeight: 600, fontSize: 11.5, background: PAPER, border: "none", borderRight: `1px solid ${PANEL_BORDER}`, padding: "8px 10px", color: NAVY_SOFT }}>× {zoom.toFixed(zoom < 1 ? 2 : 1)}</button>
+                <button onClick={zoomIn} className="rocker" title="Hineinzoomen" style={{ fontFamily: SANS, fontWeight: 700, fontSize: 14, background: PAPER, border: "none", padding: "8px 12px", color: NAVY }}>+</button>
+              </div>
               <div style={{ fontFamily: SANS, fontSize: 12, color: NAVY_SOFT, marginLeft: "auto" }}>
                 Fenster: {fmtTime(ww)} · Realzeit/Fenster: {fmtHMS(ww / speed)}
               </div>
