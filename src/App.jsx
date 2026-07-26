@@ -5,18 +5,25 @@ import {
 } from "recharts";
 
 /* ---------------------------------------------------------------------
-   TOKENS
+   TOKENS — Technische Hochschule Nürnberg ("Die Ohm") Corporate Design
 --------------------------------------------------------------------- */
-const INK = "#2B2620";
-const CHASSIS = "#EDE6D6";
-const PANEL = "#E3DAC4";
-const PANEL_BORDER = "#C6B996";
-const METAL = "#8A8478";
-const SCREEN_BG = "#07110C";
-const RED = "#B33F2C";
-const TRACE = "#6FFFB0";
+const RED = "#C8102E";        // Ohm-Rot, Primärfarbe
+const RED_DARK = "#A00D25";   // Hover/aktiv
+const NAVY = "#1B2A3D";       // Sekundärfarbe, Fließtext
+const NAVY_SOFT = "#48586B";  // gedämpfter Navy-Ton
+const PAPER = "#FFFFFF";
+const SURFACE = "#F5F6F8";    // Seitenhintergrund
+const PANEL = "#FFFFFF";
+const PANEL_BORDER = "#E1E4E9";
+const NEUTRAL = "#C7CCD3";    // Regler-Bahn
+const SCREEN_BG = NAVY;       // Diagrammfläche
+const GRID_LINE = "#31445A";
+const AXIS_LINE = "#9FB0C3";
+const TRACE = "#FFFFFF";      // Modellkurve
+const MEASURE = "#FF6E76";    // Messpunkte (heller Rot-Ton für Kontrast auf Navy)
+const RUN_GREEN = "#2E9E6B";  // Status „läuft“
+const SANS = "'Source Sans 3', 'Segoe UI', system-ui, sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
-const STENCIL = "'Big Shoulders', 'Arial Narrow', sans-serif";
 const R_GAS = 8.314; // J/(mol K)
 const T0 = 298.15; // K, reference temperature for k_ref
 
@@ -78,8 +85,8 @@ function Field({ label, value, children }) {
   return (
     <div className="mb-3">
       <div className="flex items-baseline justify-between mb-1">
-        <span style={{ fontFamily: MONO, fontSize: 10.5, letterSpacing: "0.08em", color: INK, opacity: 0.75, textTransform: "uppercase" }}>{label}</span>
-        <span style={{ fontFamily: MONO, fontSize: 12, color: INK, fontWeight: 600 }}>{value}</span>
+        <span style={{ fontFamily: SANS, fontSize: 11, letterSpacing: "0.02em", color: NAVY_SOFT, fontWeight: 600, textTransform: "uppercase" }}>{label}</span>
+        <span style={{ fontFamily: MONO, fontSize: 12.5, color: NAVY, fontWeight: 600 }}>{value}</span>
       </div>
       {children}
     </div>
@@ -94,8 +101,8 @@ function LogSlider({ min, max, value, onChange }) {
 }
 function PanelBox({ title, children }) {
   return (
-    <div style={{ background: PANEL, border: `1px solid ${PANEL_BORDER}`, borderRadius: 6, padding: "12px 14px", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.4), 0 1px 2px rgba(0,0,0,0.08)" }}>
-      <div style={{ fontFamily: STENCIL, fontWeight: 700, fontSize: 13, letterSpacing: "0.06em", color: INK, textTransform: "uppercase", marginBottom: 10, borderBottom: `1px dashed ${PANEL_BORDER}`, paddingBottom: 6 }}>
+    <div style={{ background: PANEL, border: `1px solid ${PANEL_BORDER}`, borderRadius: 8, padding: "14px 16px", boxShadow: "0 1px 3px rgba(27,42,61,0.06)" }}>
+      <div style={{ fontFamily: SANS, fontWeight: 700, fontSize: 13, letterSpacing: "0.01em", color: RED, textTransform: "uppercase", marginBottom: 10, borderBottom: `2px solid ${PANEL_BORDER}`, paddingBottom: 7 }}>
         {title}
       </div>
       {children}
@@ -218,44 +225,54 @@ export default function KinetikSimulator() {
     if (!active || !payload || !payload.length) return null;
     const row = payload.find((p) => p.dataKey === "c");
     return (
-      <div style={{ background: SCREEN_BG, border: `1px solid ${METAL}`, borderRadius: 4, padding: "6px 10px", fontFamily: MONO, fontSize: 11, color: "#E8F0EA" }}>
+      <div style={{ background: NAVY, border: `1px solid ${NAVY_SOFT}`, borderRadius: 4, padding: "6px 10px", fontFamily: MONO, fontSize: 11, color: "#EAEFF4" }}>
         <div style={{ opacity: 0.7, marginBottom: 4 }}>t = {fmtTime(label)}</div>
-        {row && <div style={{ color: TRACE }}>c = {row.value?.toFixed(3)} mol/L</div>}
+        {row && <div style={{ color: MEASURE }}>c = {row.value?.toFixed(3)} mol/L</div>}
       </div>
     );
   };
 
   return (
-    <div className="w-full min-h-screen flex justify-center p-3 md:p-6" style={{ background: CHASSIS }}>
+    <div className="w-full min-h-screen flex justify-center p-3 md:p-6" style={{ background: SURFACE }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@700;900&family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
-        input.knob { -webkit-appearance:none; appearance:none; width:100%; height:5px; border-radius:3px; background-color:#c9bc9c; cursor:pointer; }
+        @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+        input.knob { -webkit-appearance:none; appearance:none; width:100%; height:5px; border-radius:3px; background-color:${NEUTRAL}; cursor:pointer; }
         input.knob::-webkit-slider-thumb { -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
-          background: radial-gradient(circle at 32% 32%, #fff, ${METAL} 75%); border:2px solid ${INK}; box-shadow:0 1px 2px rgba(0,0,0,.45); cursor:pointer; }
+          background: ${RED}; border:2px solid #fff; box-shadow:0 0 0 1px ${RED}, 0 1px 3px rgba(27,42,61,.35); cursor:pointer; }
         input.knob::-moz-range-thumb { width:16px; height:16px; border-radius:50%;
-          background: radial-gradient(circle at 32% 32%, #fff, ${METAL} 75%); border:2px solid ${INK}; cursor:pointer; }
-        input.knob::-moz-range-track { background:#c9bc9c; height:5px; border-radius:3px; }
+          background: ${RED}; border:2px solid #fff; box-shadow:0 0 0 1px ${RED}; cursor:pointer; }
+        input.knob::-moz-range-track { background:${NEUTRAL}; height:5px; border-radius:3px; }
         .led { animation: pulseGlow 1.1s ease-in-out infinite; }
         @keyframes pulseGlow { 0%,100%{opacity:1} 50%{opacity:.35} }
         @media (prefers-reduced-motion: reduce) { .led { animation: none; } }
+        .rocker { transition: filter 0.15s ease, transform 0.05s ease; }
+        .rocker:hover { filter: brightness(0.95); }
         .rocker:active { transform: translateY(1px); }
       `}</style>
 
       <div className="w-full flex flex-col gap-4" style={{ maxWidth: 1100 }}>
         {/* HEADER */}
-        <div className="flex items-end justify-between flex-wrap gap-3 pb-3" style={{ borderBottom: `2px solid ${INK}` }}>
-          <div>
-            <h1 style={{ fontFamily: STENCIL, fontWeight: 900, fontSize: "clamp(28px,4vw,42px)", color: INK, letterSpacing: "0.02em", lineHeight: 1 }}>
-              REAKTION·MONITOR
-            </h1>
-            <p style={{ fontFamily: MONO, fontSize: 11.5, color: INK, opacity: 0.75, letterSpacing: "0.06em", textTransform: "uppercase", marginTop: 4 }}>
-              Live-Integration · Arrhenius · Temperatur während des Laufs änderbar
-            </p>
+        <div className="flex items-end justify-between flex-wrap gap-3 pb-4" style={{ borderBottom: `3px solid ${RED}` }}>
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-2" aria-hidden="true">
+              <span style={{ fontFamily: SANS, fontWeight: 900, fontSize: 34, color: RED, lineHeight: 1, letterSpacing: "-0.01em" }}>ohm</span>
+              <span style={{ fontFamily: SANS, fontWeight: 600, fontSize: 11.5, color: NAVY, lineHeight: 1.15 }}>
+                Technische<br />Hochschule<br />Nürnberg
+              </span>
+            </div>
+            <div style={{ borderLeft: `1px solid ${PANEL_BORDER}`, paddingLeft: 16 }}>
+              <h1 style={{ fontFamily: SANS, fontWeight: 900, fontSize: "clamp(24px,3.4vw,36px)", color: NAVY, letterSpacing: "-0.01em", lineHeight: 1 }}>
+                Reaktion·Monitor
+              </h1>
+              <p style={{ fontFamily: SANS, fontSize: 12.5, color: NAVY_SOFT, letterSpacing: "0.01em", marginTop: 4 }}>
+                Live-Integration · Arrhenius · Temperatur während des Laufs änderbar
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <span className="led" style={{ width: 10, height: 10, borderRadius: "50%",
-              background: running ? "#6FFFB0" : RED, boxShadow: `0 0 8px ${running ? "#6FFFB0" : RED}` }} />
-            <span style={{ fontFamily: MONO, fontSize: 11, color: INK, textTransform: "uppercase" }}>{running ? "Läuft" : "Angehalten"}</span>
+              background: running ? RUN_GREEN : RED, boxShadow: `0 0 8px ${running ? RUN_GREEN : RED}` }} />
+            <span style={{ fontFamily: SANS, fontWeight: 600, fontSize: 12, color: NAVY, textTransform: "uppercase" }}>{running ? "Läuft" : "Angehalten"}</span>
           </div>
         </div>
 
@@ -275,7 +292,7 @@ export default function KinetikSimulator() {
               <Field label="Aktivierungsenergie Eₐ" value={`${Ea.toFixed(0)} kJ/mol`}>
                 <LinearSlider min={20} max={150} step={1} value={Ea} onChange={setEa} />
               </Field>
-              <div style={{ fontFamily: MONO, fontSize: 10, color: INK, opacity: 0.55 }}>
+              <div style={{ fontFamily: SANS, fontSize: 11, color: NAVY_SOFT }}>
                 Alle Regler wirken sofort — auch während der Lauf läuft.
               </div>
             </PanelBox>
@@ -293,13 +310,13 @@ export default function KinetikSimulator() {
               <Field label="Beschleunigung" value={`× ${speed.toFixed(0)}`}>
                 <LogSlider min={1} max={5000} value={speed} onChange={setSpeed} />
               </Field>
-              <button onClick={handleAutoSpeed} className="rocker w-full" style={{ fontFamily: MONO, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em", background: "#fff", border: `1px solid ${PANEL_BORDER}`, borderRadius: 4, padding: "6px 0", color: INK, marginBottom: 12 }}>
+              <button onClick={handleAutoSpeed} className="rocker w-full" style={{ fontFamily: SANS, fontWeight: 600, fontSize: 12, textTransform: "uppercase", letterSpacing: "0.02em", background: PAPER, border: `1px solid ${PANEL_BORDER}`, borderRadius: 5, padding: "7px 0", color: NAVY, marginBottom: 12 }}>
                 Auto-Zeitraffer
               </button>
               <Field label="Euler-Schrittweite k·Δt" value={eulerRatio.toFixed(2)}>
                 <LogSlider min={0.01} max={2.5} value={eulerRatio} onChange={setEulerRatio} />
               </Field>
-              <div style={{ fontFamily: MONO, fontSize: 10, color: eulerRatio > 2 ? RED : INK, opacity: eulerRatio > 2 ? 1 : 0.55 }}>
+              <div style={{ fontFamily: SANS, fontSize: 11, fontWeight: eulerRatio > 2 ? 700 : 400, color: eulerRatio > 2 ? RED : NAVY_SOFT }}>
                 {eulerRatio > 2 ? "⚠ k·Δt > 2 — numerisch instabil, Kurve schwingt auf." : "Kleiner = genauer/stabiler. Werte > 2 zeigen Instabilität."}
               </div>
             </PanelBox>
@@ -307,64 +324,63 @@ export default function KinetikSimulator() {
 
           {/* CENTER SCREEN + READOUTS */}
           <div className="lg:col-span-8 flex flex-col gap-3">
-            <div style={{ position: "relative", background: SCREEN_BG, border: `3px solid ${METAL}`, borderRadius: 10,
-              boxShadow: "inset 0 0 40px rgba(111,255,176,0.08), 0 3px 10px rgba(0,0,0,0.3)", padding: "10px 6px 4px 0", overflow: "hidden" }}>
-              <div className="pointer-events-none" style={{ position: "absolute", inset: 0,
-                backgroundImage: "repeating-linear-gradient(to bottom, rgba(255,255,255,0.5) 0px, transparent 1px, transparent 3px)", opacity: 0.04, zIndex: 2 }} />
+            <div style={{ position: "relative", background: SCREEN_BG, borderRadius: 10,
+              boxShadow: "0 3px 10px rgba(27,42,61,0.25)", padding: "10px 6px 4px 0", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: RED }} />
               <div style={{ width: "100%", height: 380 }}>
                 <ResponsiveContainer>
                   <ComposedChart margin={{ top: 10, right: 18, bottom: 6, left: -6 }}>
-                    <CartesianGrid stroke="#2A4536" strokeDasharray="2 4" />
+                    <CartesianGrid stroke={GRID_LINE} strokeDasharray="2 4" />
                     <XAxis dataKey="t" type="number" domain={xDomain} allowDataOverflow
-                      tickFormatter={(v) => fmtTime(v)} stroke="#7FA893" tick={{ fontFamily: MONO, fontSize: 10, fill: "#7FA893" }} />
-                    <YAxis type="number" domain={yDomain} allowDataOverflow stroke="#7FA893" tick={{ fontFamily: MONO, fontSize: 10, fill: "#7FA893" }}
-                      label={{ value: "c / (mol·L⁻¹)", angle: -90, position: "insideLeft", fill: "#7FA893", fontSize: 10, fontFamily: MONO }} />
+                      tickFormatter={(v) => fmtTime(v)} stroke={AXIS_LINE} tick={{ fontFamily: MONO, fontSize: 10, fill: AXIS_LINE }} />
+                    <YAxis type="number" domain={yDomain} allowDataOverflow stroke={AXIS_LINE} tick={{ fontFamily: MONO, fontSize: 10, fill: AXIS_LINE }}
+                      label={{ value: "c / (mol·L⁻¹)", angle: -90, position: "insideLeft", fill: AXIS_LINE, fontSize: 10, fontFamily: MONO }} />
                     <Tooltip content={<CustomTooltip />} />
                     <Line data={histRef.current} dataKey="c" stroke={TRACE} strokeWidth={2} dot={false} isAnimationActive={false} name="Modell" />
-                    <Scatter data={noisyRef.current} dataKey="value" fill={TRACE} fillOpacity={0.85} isAnimationActive={false} shape="circle" r={2.6} name="Messung" />
-                    {running && <ReferenceLine x={elapsed} stroke="#E8F0EA" strokeOpacity={0.25} />}
-                    <ReferenceDot x={elapsed} y={c} r={4.5} fill={TRACE} stroke="#0A1410" strokeWidth={1} isFront />
+                    <Scatter data={noisyRef.current} dataKey="value" fill={MEASURE} fillOpacity={0.9} isAnimationActive={false} shape="circle" r={2.6} name="Messung" />
+                    {running && <ReferenceLine x={elapsed} stroke="#FFFFFF" strokeOpacity={0.25} />}
+                    <ReferenceDot x={elapsed} y={c} r={4.5} fill={MEASURE} stroke={NAVY} strokeWidth={1} isFront />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <button onClick={handlePlayPause} className="rocker" style={{ fontFamily: MONO, fontWeight: 700, fontSize: 13, letterSpacing: "0.05em",
-                background: running ? "#E7C9C0" : "#C9E7D4", border: `1px solid ${INK}`, borderRadius: 5, padding: "9px 20px", color: INK, boxShadow: "0 2px 0 rgba(0,0,0,0.15)" }}>
+              <button onClick={handlePlayPause} className="rocker" style={{ fontFamily: SANS, fontWeight: 700, fontSize: 13, letterSpacing: "0.01em",
+                background: running ? PAPER : RED, border: running ? `1px solid ${NAVY}` : `1px solid ${RED}`, borderRadius: 5, padding: "9px 20px", color: running ? NAVY : "#fff", boxShadow: "0 2px 0 rgba(27,42,61,0.12)" }}>
                 {running ? "⏸ PAUSE" : "▶ START"}
               </button>
-              <button onClick={handleReset} className="rocker" style={{ fontFamily: MONO, fontSize: 12, letterSpacing: "0.05em", background: "#fff", border: `1px solid ${PANEL_BORDER}`, borderRadius: 5, padding: "9px 16px", color: INK }}>
+              <button onClick={handleReset} className="rocker" style={{ fontFamily: SANS, fontWeight: 600, fontSize: 12.5, letterSpacing: "0.01em", background: PAPER, border: `1px solid ${PANEL_BORDER}`, borderRadius: 5, padding: "9px 16px", color: NAVY }}>
                 ↺ Neuer Messlauf
               </button>
-              <div style={{ fontFamily: MONO, fontSize: 11, color: INK, opacity: 0.75, marginLeft: "auto" }}>
+              <div style={{ fontFamily: SANS, fontSize: 12, color: NAVY_SOFT, marginLeft: "auto" }}>
                 Fenster: {fmtTime(ww)} · Realzeit/Fenster: {fmtHMS(ww / speed)}
               </div>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <PanelBox title="Uhr">
-                <div style={{ fontFamily: MONO, fontSize: 18, color: INK }}>{fmtTime(elapsed)}</div>
+                <div style={{ fontFamily: MONO, fontSize: 18, color: NAVY }}>{fmtTime(elapsed)}</div>
               </PanelBox>
               <PanelBox title="k(T)">
-                <div style={{ fontFamily: MONO, fontSize: 14, color: INK }}>{fmtK(k)}</div>
-                {unstableRef.current && <div style={{ fontFamily: MONO, fontSize: 10, color: RED, marginTop: 4 }}>⚠ instabil</div>}
+                <div style={{ fontFamily: MONO, fontSize: 14, color: NAVY }}>{fmtK(k)}</div>
+                {unstableRef.current && <div style={{ fontFamily: SANS, fontWeight: 700, fontSize: 10.5, color: RED, marginTop: 4 }}>⚠ instabil</div>}
               </PanelBox>
               <PanelBox title="t½">
-                <div style={{ fontFamily: MONO, fontSize: 14, color: INK }}>{fmtTime(t12)}</div>
+                <div style={{ fontFamily: MONO, fontSize: 14, color: NAVY }}>{fmtTime(t12)}</div>
               </PanelBox>
               <PanelBox title="c(t) / Rest">
-                <div style={{ fontFamily: MONO, fontSize: 14, color: INK }}>{c.toFixed(3)} mol/L</div>
-                <div style={{ fontFamily: MONO, fontSize: 11, color: INK, opacity: 0.7 }}>{pctRemaining.toFixed(1)} %</div>
+                <div style={{ fontFamily: MONO, fontSize: 14, color: NAVY }}>{c.toFixed(3)} mol/L</div>
+                <div style={{ fontFamily: MONO, fontSize: 11, color: NAVY_SOFT }}>{pctRemaining.toFixed(1)} %</div>
               </PanelBox>
             </div>
           </div>
         </div>
 
         <div style={{ borderTop: `1px solid ${PANEL_BORDER}`, paddingTop: 10, display: "flex", flexWrap: "wrap", gap: "6px 22px" }}>
-          <span style={{ fontFamily: MONO, fontSize: 10.5, color: INK, opacity: 0.65 }}>Modell: dc/dt = −k(T)·c, live integriert (explizites Euler)</span>
-          <span style={{ fontFamily: MONO, fontSize: 10.5, color: INK, opacity: 0.65 }}>Arrhenius: k(T) = A·exp(−Eₐ/(R·T)), jeden Frame neu ausgewertet</span>
-          <span style={{ fontFamily: MONO, fontSize: 10.5, color: INK, opacity: 0.65 }}>Messrauschen: additiv, Gauß-verteilt, σ = {noisePct}% von c₀</span>
+          <span style={{ fontFamily: SANS, fontSize: 11.5, color: NAVY_SOFT }}>Modell: dc/dt = −k(T)·c, live integriert (explizites Euler)</span>
+          <span style={{ fontFamily: SANS, fontSize: 11.5, color: NAVY_SOFT }}>Arrhenius: k(T) = A·exp(−Eₐ/(R·T)), jeden Frame neu ausgewertet</span>
+          <span style={{ fontFamily: SANS, fontSize: 11.5, color: NAVY_SOFT }}>Messrauschen: additiv, Gauß-verteilt, σ = {noisePct}% von c₀</span>
         </div>
       </div>
     </div>
