@@ -469,12 +469,12 @@ export default function KinetikAbsorbanceSequential() {
               boxShadow: "0 1px 3px rgba(0,0,0,0.05)", padding: "10px 6px 4px 0" }}>
               <div style={{ width: "100%", height: 400 }}>
                 <ResponsiveContainer>
-                  <ComposedChart margin={{ top: 10, right: 18, bottom: 6, left: -6 }}>
+                  <ComposedChart margin={{ top: 10, right: 18, bottom: 6, left: 14 }}>
                     <CartesianGrid stroke={CHART_GRID} strokeDasharray="2 4" />
                     <XAxis dataKey="t" type="number" domain={xDomain} allowDataOverflow
                       tickFormatter={(v) => fmtTime(v)} stroke={GRAY} tick={{ fontFamily: MONO, fontSize: 10, fill: GRAY }} />
                     <YAxis type="number" domain={[0, yMax]} allowDataOverflow stroke={GRAY} tick={{ fontFamily: MONO, fontSize: 10, fill: GRAY }}
-                      label={{ value: "Absorption A (a.u.)", angle: -90, position: "insideLeft", fill: GRAY, fontSize: 10, fontFamily: MONO }} />
+                      label={{ value: "Absorption A (a.u.)", angle: -90, position: "insideLeft", dx: -6, fill: INK, fontSize: 12, fontWeight: 600, fontFamily: SANS }} />
                     <Tooltip content={<CustomTooltip />} />
                     <ReferenceLine y={epsilon * A0s} stroke={GRAY} strokeDasharray="2 3" strokeOpacity={0.6} />
                     {channels.map((ch) => (
