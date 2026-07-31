@@ -245,16 +245,14 @@ export default function KinetikAbsorbanceSequential() {
       concRef.current[ch.id] = c;
       unstableRef.current[ch.id] = k * subDt > 2;
 
-      const arr = histRef.current[ch.id] || (histRef.current[ch.id] = []);
-      arr.push({ t, c });
+      histRef.current[ch.id] = (histRef.current[ch.id] || []).concat([{ t, c }]);
 
       const lastS = lastSampleRef.current[ch.id] ?? 0;
       if (t - lastS >= p.sampleInterval) {
         const trueAbs = p.epsilon * (A0s - c);
         const noiseAbs = (p.noisePct / 100) * p.epsilon * A0s;
         const val = Math.max(0, trueAbs + noiseAbs * gaussRef.current());
-        const narr = noisyRef.current[ch.id] || (noisyRef.current[ch.id] = []);
-        narr.push({ t, value: val });
+        noisyRef.current[ch.id] = (noisyRef.current[ch.id] || []).concat([{ t, value: val }]);
         lastSampleRef.current[ch.id] = t;
       }
 
@@ -390,10 +388,8 @@ export default function KinetikAbsorbanceSequential() {
         {/* HEADER */}
         <div className="flex items-end justify-between flex-wrap gap-3 pb-3" style={{ borderBottom: `3px solid ${OHM_RED}` }}>
           <div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-              <span style={{ fontFamily: SANS, fontWeight: 800, fontSize: 13, color: "#fff", background: OHM_RED, padding: "2px 8px", borderRadius: 3, letterSpacing: "0.04em" }}>
-                die Ohm
-              </span>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+              <img src="/logo.svg" alt="Technische Hochschule Nürnberg – die Ohm" style={{ height: 22, width: "auto" }} />
               <h1 style={{ fontFamily: SANS, fontWeight: 800, fontSize: "clamp(24px,3.4vw,34px)", color: INK, letterSpacing: "-0.01em", lineHeight: 1 }}>
                 REAKTION·MONITOR
               </h1>
