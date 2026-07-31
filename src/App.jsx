@@ -358,7 +358,7 @@ export default function KinetikAbsorbanceSequential() {
     return (
       <div style={{ background: PANEL, border: `1px solid ${PANEL_BORDER}`, borderRadius: 4, padding: "6px 10px", fontFamily: MONO, fontSize: 11, color: INK, boxShadow: "0 2px 6px rgba(0,0,0,0.12)" }}>
         <div style={{ opacity: 0.6, marginBottom: 4 }}>t = {fmtTime(label)}</div>
-        {payload.filter((p) => p.dataKey === "a").map((p) => (
+        {payload.filter((p) => p.dataKey === "a" && p.name === `${activeCh?.tempC}°C`).map((p) => (
           <div key={p.name} style={{ color: p.color, fontWeight: 700 }}>{p.name}: A = {p.value?.toFixed(3)}</div>
         ))}
       </div>
