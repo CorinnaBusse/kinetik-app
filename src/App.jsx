@@ -436,13 +436,13 @@ export default function KinetikAbsorbanceSequential() {
               <Field label="Präexponentieller Faktor k₀" value={fmtK(k0)} locked={locked}>
                 <LogSlider min={1} max={1e15} value={k0} onChange={setK0} disabled={locked} />
               </Field>
-              <Field label="Aktivierungsenergie Eₐ" value={`${dec(Ea, 0)} kJ/mol`} locked={locked}>
+              <Field label={<>Aktivierungsenergie E<sub>A</sub></>} value={`${dec(Ea, 0)} kJ/mol`} locked={locked}>
                 <LinearSlider min={20} max={150} step={1} value={Ea} onChange={setEa} disabled={locked} />
               </Field>
               <div style={{ fontFamily: SANS, fontSize: 11, color: GRAY }}>
                 {locked
-                  ? <>c<sub>E,0</sub>, k₀ und Eₐ sind für diese Versuchsreihe gesperrt — erst nach 'Neuer Messlauf' wieder änderbar.</>
-                  : <>c<sub>E,0</sub>, k₀ und Eₐ nur vor dem ersten Start änderbar.</>}
+                  ? <>c<sub>E,0</sub>, k₀ und E<sub>A</sub> sind für diese Versuchsreihe gesperrt — erst nach 'Neuer Messlauf' wieder änderbar.</>
+                  : <>c<sub>E,0</sub>, k₀ und E<sub>A</sub> nur vor dem ersten Start änderbar.</>}
               </div>
             </PanelBox>
 
