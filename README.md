@@ -1,4 +1,4 @@
-# Reaktion·Monitor — Kinetik-Simulator
+# Batch Kinetik·Monitor — Kinetik-Simulator
 
 Interaktive Live-Simulation einer Reaktion 1. Ordnung für die Lehre:
 Edukt → Produkt, Geschwindigkeitskonstante über die Arrhenius-Gleichung

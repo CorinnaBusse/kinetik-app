@@ -327,7 +327,7 @@ export default function KinetikAbsorbanceSequential() {
     });
     rows.sort((a, b) => a.id - b.id || a.t - b.t);
     const meta = [
-      `# Reaktion-Monitor Messexport (sequentiell)`,
+      `# Batch Kinetik-Monitor Messexport (sequentiell)`,
       `# c0=${A0v} mol/L; k0=${k0} 1/s; Ea=${Ea} kJ/mol; epsilon=${epsilon} L/mol; Schichtdicke=${pathLength} cm; Rauschen=${noisePct}%; Messintervall=${sampleInterval}s`,
       `# Zeitpunkt: ${new Date().toLocaleString("de-DE")}`,
     ];
@@ -412,7 +412,7 @@ export default function KinetikAbsorbanceSequential() {
             <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
                <img src={OHM_LOGO} alt="Ohm Angewandte Chemie" style={{ height: 34, width: "auto", display: "block" }} />
                <h1 style={{ fontFamily: SANS, fontWeight: 800, fontSize: "clamp(24px,3.4vw,34px)", color: INK, letterSpacing: "-0.01em", lineHeight: 1 }}>
-                REAKTION·MONITOR
+                BATCH KINETIK·MONITOR
               </h1>
             </div>
             <p style={{ fontFamily: SANS, fontSize: 12, color: GRAY, marginTop: 6 }}>
@@ -429,7 +429,7 @@ export default function KinetikAbsorbanceSequential() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* LEFT CONTROLS */}
           <div className="lg:col-span-3 flex flex-col gap-4">
-            <PanelBox title="Reaktion & Kinetik">
+            <PanelBox title="Batch Kinetik">
               <Field label={<>Startkonz. c<sub>E,0</sub> (Edukt)</>} value={`${dec(A0, 2)} mol/L`} locked={locked}>
                 <LinearSlider min={0.1} max={2} step={0.05} value={A0} onChange={setA0} disabled={locked} />
               </Field>
