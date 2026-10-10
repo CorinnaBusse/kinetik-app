@@ -13,7 +13,7 @@ werden.
   (Arrhenius-Gleichung). Vorgegeben werden der präexponentielle Faktor k₀
   und die Aktivierungsenergie E_A.
 - **Extinktion:** E(t) = ε · d · (c_E,0 − c_E(t)) nach dem
-  Lambert-Beerschen Gesetz, mit Extinktionskoeffizient ε (L·mol⁻¹·cm⁻¹)
+  Lambert-Beerschen Gesetz, mit Extinktionskoeffizient ε (L·mmol⁻¹·cm⁻¹)
   und Schichtdicke d (cm).
 - **Versuchsreihen-Logik:** Startkonzentration c_E,0, k₀, E_A, ε und d
   sind nur vor dem ersten Start einer Versuchsreihe änderbar und werden
