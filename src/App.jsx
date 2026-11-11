@@ -170,14 +170,14 @@ export default function KinetikAbsorbanceSequential() {
   const nextId = useRef(4);
   const [channels, setChannels] = useState([
     { id: 1, tempC: 25, color: CHANNEL_COLORS[0] },
-    { id: 2, tempC: 50, color: CHANNEL_COLORS[1] },
-    { id: 3, tempC: 75, color: CHANNEL_COLORS[2] },
+    { id: 2, tempC: 30, color: CHANNEL_COLORS[1] },
+    { id: 3, tempC: 35, color: CHANNEL_COLORS[2] },
   ]);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [A0, setA0] = useState(1.0);
+  const [A0, setA0] = useState(0.0001);
   const [k0, setK0] = useState(3.26e8);
   const [Ea, setEa] = useState(60);
-  const [epsilon, setEpsilon] = useState(1.0);
+  const [epsilon, setEpsilon] = useState(10.0);
   const [pathLength, setPathLength] = useState(1.0);
   const [noisePct, setNoisePct] = useState(3);
   const [sampleInterval, setSampleInterval] = useState(5);
